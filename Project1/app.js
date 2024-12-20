@@ -12,11 +12,11 @@ app.use(express.urlencoded({extended:true}));
 
 app.use(express.static(path.join(__dirname,'public')));
 
-//route render the 
+//route render 
 
 app.get('/',(req,res)=>{
     res.render('index');
 
 })
 app.listen(3000);
-console.log("localhost:3000")
+console.log("localhost:3000") 
