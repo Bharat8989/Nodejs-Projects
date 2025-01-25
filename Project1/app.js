@@ -20,11 +20,11 @@ app.get('/',(req,res)=>{
         console.error(err);
         return  res.render('index',{files:[]});
     }
-    res.render('index',{files});
+    res.render('index',{files}); 
 });
 
 
-// View task details 
+// View task details
   app.get('/files/:filename',(req,res)=>{
     const filePath=path.join(__dirname,'files',req.params.filename);
     fs.readFile(filePath,'utf-8',(err,fileData)=>{
