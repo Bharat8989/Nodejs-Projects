@@ -59,6 +59,58 @@ app.get('/profile', isLoggedIn, async (req, res) => {
     }
 });
 
+// Like/Unlike a Post
+app.get('/like/:id', isLoggedIn, async (req, res) => {
+    try {
+        const post = await postModel.findById(req.params.id); // Find the post by ID
+        const userId = req.user._id; // Logged-in user's ID
+        
+        if (post.likes.includes(userId)) {
+            // Unlike the post
+            post.likes = post.likes.filter((like) => !like.equals(userId));
+        } else {
+            // Like the post
+            post.likes.push(userId);
+        }
+
+        await post.save();
+        res.redirect('back'); // Redirect to the previous page
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error while liking/unliking the post');
+    }
+});
+
+// Edit a Post (GET for Edit Form)
+app.get('/edit/:id', isLoggedIn, async (req, res) => {
+    try {
+        const post = await postModel.findById(req.params.id);
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+        res.render('edit-post', { post });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error loading edit page');
+    }
+});
+
+// Update Post (POST for Saving Edits)
+app.post('/edit/:id', isLoggedIn, async (req, res) => {
+    try {
+        const { content } = req.body;
+        const post = await postModel.findByIdAndUpdate(req.params.id, { content }, { new: true });
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+        res.redirect('back');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error updating post');
+    }
+});
+
+
 app.post('/create-post', isLoggedIn, async (req, res) => {
     try {
         const user = await userModel.findOne({ email: req.user.email });
