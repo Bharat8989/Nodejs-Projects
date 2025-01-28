@@ -1,42 +1,38 @@
-const express=require('express')
-const path=require('path')
-const fs=require('fs')
-const app=express();
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const app = express();
 
-//set the EJS (Embedded JavaScript ) as the view engine 
-app.set('view engine','ejs')
+// Set the EJS (Embedded JavaScript) as the view engine 
+app.set('view engine', 'ejs');
 
-//middleware parsing JSON and url encoding data 
+// Middleware parsing JSON and URL-encoded data
 app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname,'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
-//route render 
-
-app.get('/',(req,res)=>{
-    fs.readdir('./files',(err,files)=>{
-    if(err){
-        console.error(err);
-        return  res.render('index',{files:[]});
-    }
-    res.render('index',{files}); 
+// Route to render the to-do list
+app.get('/', (req, res) => {
+    fs.readdir('./files', (err, files) => {
+        if (err) {
+            console.error(err);
+            return res.render('index', { files: [] });
+        }
+        res.render('index', { files });
+    });
 });
 
-
 // View task details
-  app.get('/files/:filename',(req,res)=>{
-    const filePath=path.join(__dirname,'files',req.params.filename);
-    fs.readFile(filePath,'utf-8',(err,fileData)=>{
-        if(err){
+app.get('/files/:filename', (req, res) => {
+    const filePath = path.join(__dirname, 'files', req.params.filename);
+    fs.readFile(filePath, 'utf-8', (err, fileData) => {
+        if (err) {
             console.error(err);
-            return res.status(404).send('Task not Found');
+            return res.status(404).send('Task not found');
         }
-        res.render('show',{title:req.params.filename.replace('.txt',''),content:fileData});
-
+        res.render('show', { title: req.params.filename.replace('.txt', ''), content: fileData });
     });
-  })
-
 });
 
 // Create a new task
@@ -54,6 +50,6 @@ app.post('/create', (req, res) => {
     });
 });
 
-
-app.listen(3000);
-console.log("localhost:3000") 
+app.listen(3000, () => {
+    console.log("Server is running on http://localhost:3000");
+});
